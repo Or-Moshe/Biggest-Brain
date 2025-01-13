@@ -1,5 +1,5 @@
 import React from "react";
-import HomeScene from "../scenes/HomeScene";
+import HomeScene from "../phaser/scenes/HomeScene";
 
 const Home = () => {
     
