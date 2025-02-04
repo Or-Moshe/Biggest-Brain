@@ -1,0 +1,53 @@
+const equations = {
+    level1: [
+        { equation: "3 ? 5 = 8", solution: 8, operator: "+" },
+        { equation: "10 ? 4 = 6", solution: 6, operator: "-" },
+        { equation: "2 ? 7 = 9", solution: 9, operator: "+" },
+        { equation: "6 ? 1 = 5", solution: 5, operator: "-" },
+        { equation: "9 ? 1 = 10", solution: 10, operator: "+" },
+        { equation: "8 ? 3 = 5", solution: 5, operator: "-" },
+        { equation: "4 ? 4 = 8", solution: 8, operator: "+" },
+        { equation: "7 ? 2 = 5", solution: 5, operator: "-" },
+        { equation: "5 ? 6 = 11", solution: 11, operator: "+" },
+        { equation: "10 ? 7 = 3", solution: 3, operator: "-" },
+    ],
+    level2: [
+        { equation: "3 ? 5 * 2 = 13", solution: 13, operator: "*" },
+        { equation: "10 ? 4 * 3 = -2", solution: -2, operator: "-" },
+        { equation: "2 * 7 ? 4 = 18", solution: 18, operator: "+" },
+        { equation: "6 ? 3 - 2 = 16", solution: 16, operator: "*" },
+        { equation: "9 ? 2 * 5 = 19", solution: 19, operator: "+" },
+        { equation: "8 - 3 ? 2 = 2", solution: 2, operator: "*"},
+        { equation: "4 * 4 ? 5 = 21", solution: 21, operator: "+" },
+        { equation: "7 ? 2 - 3 = 11", solution: 11, operator: "*" },
+        { equation: "5 ? 6 * 2 = 17", solution: 17, operator: "+" },
+        { equation: "10 ? 7 * 3 = -11", solution: -11, operator: "-" },
+    ],
+    level3: [
+        { equation: "12 ? 3 + 5 = ", solution: 9 },
+        { equation: "20 ? (4 * 3)", solution: 8 },
+        { equation: "(2 + 7) ? 3", solution: 27 },
+        { equation: "6 * (3 ? 1)", solution: 12 },
+        { equation: "9 ? 10 / 2", solution: 14 },
+        { equation: "(8 ? 3) * 2", solution: 10 },
+        { equation: "4 ? (4 + 2)", solution: 24 },
+        { equation: "7 ? 2 / 2", solution: 7 },
+        { equation: "(5 + 6) ? 2", solution: 22 },
+        { equation: "10 ? (7 + 3)", solution: 0 },  
+    ],
+    level4: [
+        { equation: "(3 ? 5) * (2 - 1)", solution: 8 },
+        { equation: "(10 ? 4) * (3 + 2)", solution: 30 },
+        { equation: "(2 ? 7) * (3 - 1)", solution: 18 },
+        { equation: "(6 ? 3) - (4 + 2)", solution: 16 },
+        { equation: "(9 ? 2) * (5 - 3)", solution: 22 },
+        { equation: "(8 ? 3) * (2 + 2)", solution: 20 },
+        { equation: "(4 ? 4) + (5 - 1)", solution: 17 },
+        { equation: "(7 ? 2) - (3 + 5)", solution: 6 },
+        { equation: "(5 + 6) ? (2 - 1)", solution: 11 },
+        { equation: "(10 ? 7) * (3 + 4)", solution: 21 },
+    ],
+  };
+  
+  export default equations;
+  

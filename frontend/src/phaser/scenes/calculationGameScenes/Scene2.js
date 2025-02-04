@@ -1,109 +1,122 @@
 import Phaser from "phaser";
 import Clock from '../generics/Clock';
 import CorrectAnswer from '../generics/CorrectAnswer';
+import WrongAnswer from '../generics/WrongAnswer';
+import CalculationGameCtrl from '../../../controllers/CalculationGameCtrl';
+import plusImage from '../../assets/plus.jpeg';
+import minusImage from '../../assets/minus.png';
 
 class Scene2 extends Phaser.Scene {
     constructor() {
         super('Scene2');
-        this.num1 = 0;
-        this.num2 = 0;
-        this.operator = '';
-        this.problemSolution = 0;
         this.operatorCube = null;
         this.operatorCubeColors = {'-': "0x74d5ed", '+': '0xed9074', '*': '0xeddd74', '/': '0x74edac'};
         this.cubeWidth = 50;
         this.cubeHeight = 50;
-      }
-    
-      create() {
-        this.clock = new Clock(this, 700, 50, 30);
-        // Generate a math problem
-        this.generateProblem();
-    
-        // Display the equation
-        this.createNumberText(200, 150, this.num1, '32px', '#ffffff');
-        this.createCubeWithGraphics(300, 150, null, '0xffffff');
-        this.createNumberText(400, 150, this.num2, '32px', '#ffffff');
-        this.createNumberText(500, 150, `= ${this.problemSolution}`, '32px', '#ffffff');
-    
-        Object.keys(this.operatorCubeColors).forEach((op, index) => {
-            this.createInteractiveCube(200 + index * 120, 300, op, this.operatorCubeColors[op]);
-        })
+        this.controller = new CalculationGameCtrl();
+        this.equationObj = null;
+        this.answerCubeXpos = null;
       }
 
-      createNumberText(x, y, text, fontSize, color){
-        this.add.text(x, y, `${text}`, {
-            fontSize: '32px',
-            color: color,
-        });
-      }
-
-      createCubeWithGraphics(x, y, text, color) {
-        this.operatorCube = this.add.graphics();
-        this.operatorCube.fillStyle(color, 1); // Set fill color
-        this.operatorCube.lineStyle(5, "0x1f0107", 1); 
-        this.operatorCube.strokeRoundedRect(x, y, this.cubeWidth, this.cubeHeight, 10); // Border for rounded rect
-        this.operatorCube.fillRoundedRect(x, y, this.cubeWidth, this.cubeHeight, 10); // Draw a 100x100 cube
-        
-        this.add.text(x + this.cubeWidth / 2, y + this.cubeHeight / 2, text, {
-            fontSize: '32px',
-            color: '#ffffff',
-          }).setOrigin(0.5);
-      }
-
-      createInteractiveCube(x, y, operator, color) {
-        this.createCubeWithGraphics(x, y, operator, color);
-        // Make the cube interactive
-        this.operatorCube.setInteractive(new Phaser.Geom.Rectangle(x - 50, y - 50, 100, 100), Phaser.Geom.Rectangle.Contains);
-        this.operatorCube.on('pointerdown', () => {
-          this.handleOperatorSelection(operator);
-        });
-      }
-
-    //   showBigCheckmark() {
-    //     // Add the big green checkmark
-    //     const checkmark = this.add.text(400, 300, '✔', {
-    //       fontSize: '200px',
-    //       color: '#4caf50',
-    //       fontStyle: 'bold',
-    //     }).setOrigin(0.5);
-    
-    //     // Animate the checkmark (grow and fade out)
-    //     this.tweens.add({
-    //       targets: checkmark,
-    //       scaleX: 2, // Grow horizontally
-    //       scaleY: 2, // Grow vertically
-    //       alpha: 0,  // Fade out
-    //       duration: 1000, // 1 second
-    //       ease: 'Power1',
-    //       onComplete: () => {
-    //         checkmark.destroy(); // Remove checkmark after animation
-    //       },
-    //     });
-    //   }
-    
-    
-      generateProblem() {
-        this.num1 = Phaser.Math.Between(1, 10);
-        this.num2 = Phaser.Math.Between(1, 10);
-        this.operator = Phaser.Math.RND.pick(['+', '-', '*']); // Random operator
-        this.problemSolution = eval(`${this.num1} ${this.operator} ${this.num2}`);
-      }
-    
-      handleOperatorSelection(selectedOperator) {
-        this.createCubeWithGraphics(300, 150, selectedOperator, this.operatorCubeColors[selectedOperator]);
-        // if (selectedOperator === this.operator) {
-        //   console.log('Correct!');
-          
-        //   this.scene.restart();
-        //    // Restart the scene for a new problem
-        // } else {
-        //   console.log('Wrong operator. Try again!');
-        // }
-        setTimeout(new CorrectAnswer(this, 400, 300), 2000);
-        this.scene.restart();
-      }
+    preload(){
+      this.load.image('plus', plusImage);
+      this.load.image('minus', plusImage);
     }
+  
+    create() {
+      this.clock = new Clock(this, 700, 50, 30);
+
+      this.createNumberText(0, 0, `score: ${this.controller.getScore()}`, '32px', '#ffffff');
+      this.equationObj = this.controller.getNextEquation();
+      this.displayEquation(250, 160, this.equationObj);
+      this.displayInteractiveCubes();
+    }
+
+    displayEquation(startX, y, { equation }) {
+      const spacing = 80;
+      const parts = equation.split(' ');
+      parts.forEach((part, index) => {
+        const xPos = startX + index * spacing;
+        if (part === '?') {
+          this.answerCubeXpos = xPos;
+          // Replace '?' with an empty cube
+          this.createCubeContainer(xPos, 150, null);
+        } else {
+          // Render text for numbers and operators
+          this.createNumberText(xPos, y, part, '32px', '#ffffff');
+        }
+      });
+    }
+
+    displayInteractiveCubes(){
+      const operators = ['+', '-', '*', '/'];
+      const operatorCubes = [];
+      const startX = 200; // Starting X position
+      const startY = 300; // Y position
+      const spacing = 100; // Spacing between cubes
+      
+      // Loop through operators and create cubes
+      operators.forEach((operator, index) => {
+        const xPos = startX + index * spacing;
+      
+        const cubeContainer = this.createCubeContainer(xPos, startY, operator);
+        
+        cubeContainer.setInteractive();
+        // Click event
+        cubeContainer.on('pointerdown', () => {
+          console.log(`Clicked operator: ${operator}`);
+          this.handleOperatorSelection(operator); // Handle click event
+        });
+      
+        // Store in the array for future reference
+        operatorCubes.push(cubeContainer);
+      });
+      
+      // Align the cubes horizontally with equal spacing
+      Phaser.Actions.AlignTo(operatorCubes, Phaser.Display.Align.RIGHT_CENTER, 20);
+    }
+
+    createCubeContainer(x, y, operator) {
+      const cube = this.add.graphics();
+      cube.fillStyle(this.operatorCubeColors[operator]); // Green background color
+      cube.fillRoundedRect(-40, -40, 80, 80, 10); // Rounded corners
+      cube.lineStyle(4, 0xffffff, 1); // White border
+      cube.strokeRoundedRect(-40, -40, 80, 80, 10);
+
+      // Create text for the operator
+      const operatorText = this.add.text(0, 0, operator, {
+        fontSize: '32px',
+        color: '#ffffff',
+      }).setOrigin(0.5);
+      // Create a container to hold the graphics and text
+      const cubeContainer = this.add.container(x, y);
+      cubeContainer.setSize(80, 80);
+      cubeContainer.add([cube, operatorText]);
+
+      return cubeContainer
+    }
+  
+    handleOperatorSelection(selectedOperator) {
+      this.createCubeContainer(this.answerCubeXpos, 150, selectedOperator);
+      if (selectedOperator === this.equationObj.operator) {
+        new CorrectAnswer(this, 400, 300);
+        this.controller.updateScore(true);
+      } else {
+        new WrongAnswer(this, 400, 300);
+        this.controller.updateScore(true);
+      }
+      this.time.delayedCall(500, () => {
+        this.scene.restart(); // Restart the scene after the delay
+      });
+    }
+
+    createNumberText(x, y, text, fontSize, color){
+      this.add.text(x, y, `${text}`, {
+          fontSize: fontSize,
+          color: color,
+      });
+    }
+  }
   
   export default Scene2;
   
