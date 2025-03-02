@@ -3,13 +3,14 @@ import './App.css';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from './pages/Home';
 import CalculationGameCmp from './components/CalculationGameCmp';
+import EquationGameCmp from './components/EquationGameCmp';
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<CalculationGameCmp/>}/>
+          <Route path="/" element={<EquationGameCmp/>}/>
         </Routes>
       </BrowserRouter>
     </div>
